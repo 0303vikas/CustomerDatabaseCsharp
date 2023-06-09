@@ -76,4 +76,18 @@ public class Customer
             throw new Exception("User Address Cann't be empty");
         }
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj == null || this.GetType() != obj.GetType()) return false;
+        Customer otherCustomer = (Customer)obj;
+        if (_email == otherCustomer.Email) return true;
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        int hash = 17;
+        return (hash * 23) + _email.GetHashCode();
+    }
 }
