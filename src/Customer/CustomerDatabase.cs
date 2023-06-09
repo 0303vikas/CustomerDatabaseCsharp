@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 namespace src.Customer;
 
 public class CustomerDatabase
@@ -72,16 +73,13 @@ public class CustomerDatabase
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    public override string ToString()
+    {
+        StringBuilder databaseState = new StringBuilder("Customer Database: \n");
+        foreach (Customer customer in _customers.Values)
+        {
+            databaseState.Append($"Id : {customer.Id}\n First Name: {customer.FirstName}\n Last Name: {customer.Lastname}\n Email: {customer.Email}\n Address: {customer.Address}");
+        }
+        return databaseState.ToString();
+    }
 }

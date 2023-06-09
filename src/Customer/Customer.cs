@@ -4,10 +4,10 @@ namespace src.Customer;
 public class Customer
 {
     private int _id;
-    private string _firstName { get; set; }
-    private string _lastName { get; set; }
+    private string _firstName;
+    private string _lastName;
     private string _email;
-    private string _address { get; set; }
+    private string _address;
 
     public int Id
     {
@@ -18,6 +18,21 @@ public class Customer
     {
         get { return _email; }
         set { _email = value; }
+    }
+    public string FirstName
+    {
+        get { return _firstName; }
+        set { _firstName = value; }
+    }
+    public string Lastname
+    {
+        get { return _lastName; }
+        set { _lastName = value; }
+    }
+    public string Address
+    {
+        get { return _address; }
+        set { _address = value; }
     }
 
     public Customer(int id, string firstName, string lastName, string email, string address)
@@ -89,5 +104,10 @@ public class Customer
     {
         int hash = 17;
         return (hash * 23) + _email.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return base.ToString() + ":\n" + $"Id : {_id}\n First Name: {_firstName}\n Last Name: {_lastName}\n Email: {_email}\n Address: {_address}";
     }
 }
