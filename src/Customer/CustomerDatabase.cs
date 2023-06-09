@@ -4,7 +4,6 @@ namespace src.Customer;
 public class CustomerDatabase
 {
     private Dictionary<int, Customer> _customers;
-    private int _id = 1;
     private static CustomerDatabase _instance;
     private static readonly object _lockObject = new Object();
 
@@ -25,30 +24,53 @@ public class CustomerDatabase
         return _instance;
     }
 
-    public void AddCustomer(string firstName, string lastName, string email, string address)
+    public void AddCustomer(Customer newCustomer)
     {
-        _ = firstName ?? throw new ArgumentNullException($"{nameof(firstName)} cann't be empty"); // doesn't provide any memory allocation. Compare and destroy
-        _ = lastName ?? throw new ArgumentNullException($"{nameof(lastName)} cann't be empty");
-        _ = email ?? throw new ArgumentNullException($"{nameof(email)} cann't be empty");
-        _ = address ?? throw new ArgumentNullException($"{nameof(address)} cann't be empty");
-
-        int newId = _customers.Count == 0 ? 1 : _customers.Count + 1;
-        Customer newCustomer = new Customer(newId, firstName, lastName, email, address);
-
         foreach (Customer customer in _customers.Values)
         {
             if (customer.Equals(newCustomer))
             {
-                throw new InvalidOperationException($"Customer with  email: {newCustomer.Email} already exist in database.");
+                throw new InvalidOperationException("Email and Id should be unique.");
             }
         }
-        _customers.Add(newId, newCustomer);
+        _customers.Add(newCustomer.Id, newCustomer);
         Console.WriteLine("Customer Successfully Added.");
-
     }
     // Reading
+    public Customer GetCustomerById(int id)
+    {
+        ArgumentNullException.ThrowIfNull(id);
+        if (_customers.ContainsKey(id)) return _customers[id];
+        else throw new Exception($"Customer with id: {id} doesn't exist in database");
+    }
     // Updating
+    public void UpdateCustomer(Customer updatedCustomer)
+    {
+        ArgumentNullException.ThrowIfNull(updatedCustomer);
+        if (_customers.ContainsKey(updatedCustomer.Id))
+        {
+            _customers[updatedCustomer.Id] = updatedCustomer;
+            Console.WriteLine("User Succesfully Updated.");
+        }
+        else
+        {
+            throw new Exception("Update Exception: No user with this id found in the Database.");
+        }
+    }
     // Deleting
+    public void DeleteCustomer(int id)
+    {
+        ArgumentNullException.ThrowIfNull(id);
+        if (_customers.ContainsKey(id))
+        {
+            _customers.Remove(id);
+            Console.WriteLine("Customer Successfully Deleted.");
+        }
+        else
+        {
+            throw new Exception("Deletion Exception: No user with this id found in the Database.");
+        }
+    }
 
 
 

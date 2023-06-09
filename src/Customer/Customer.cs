@@ -81,7 +81,7 @@ public class Customer
     {
         if (obj == null || this.GetType() != obj.GetType()) return false;
         Customer otherCustomer = (Customer)obj;
-        if (_email == otherCustomer.Email) return true;
+        if (_email == otherCustomer.Email && _id == otherCustomer.Id) return true;
         return false;
     }
 
