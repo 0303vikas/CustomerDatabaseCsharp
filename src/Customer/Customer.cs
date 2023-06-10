@@ -103,7 +103,7 @@ public class Customer
     public override int GetHashCode()
     {
         int hash = 17;
-        return (hash * 23) + _email.GetHashCode();
+        return (hash * 23) + _email.GetHashCode() + _id.GetHashCode() + _firstName.GetHashCode() + _lastName.GetHashCode() + _address.GetHashCode();
     }
 
     public override string ToString()

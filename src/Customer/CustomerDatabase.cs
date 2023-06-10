@@ -4,13 +4,13 @@ namespace src.Customer;
 
 public class CustomerDatabase
 {
-    private Dictionary<int, Customer> _customers;
+    private List<Customer> _customers;
     private static CustomerDatabase _instance;
     private static readonly object _lockObject = new Object();
 
     private CustomerDatabase()
     {
-        _customers = new Dictionary<int, Customer>();
+        _customers = new List<Customer>();
     }
 
     public static CustomerDatabase Instance()
@@ -27,28 +27,30 @@ public class CustomerDatabase
 
     public void AddCustomer(Customer newCustomer)
     {
-        foreach (Customer customer in _customers.Values)
+        foreach (Customer customer in _customers)
         {
             if (customer.Equals(newCustomer))
             {
                 throw new InvalidOperationException("Email and Id should be unique.");
             }
         }
-        _customers.Add(newCustomer.Id, newCustomer);
+        _customers.Add(newCustomer);
         Console.WriteLine("Customer Successfully Added.");
     }
     // Reading
     public Customer GetCustomerById(int id)
     {
         ArgumentNullException.ThrowIfNull(id);
-        if (_customers.ContainsKey(id)) return _customers[id];
+        Customer? findCustomer = _customers.Find(item => item.Id == id);
+        if (findCustomer != null) return _customers[id];
         else throw new Exception($"Customer with id: {id} doesn't exist in database");
     }
     // Updating
     public void UpdateCustomer(Customer updatedCustomer)
     {
         ArgumentNullException.ThrowIfNull(updatedCustomer);
-        if (_customers.ContainsKey(updatedCustomer.Id))
+        Customer? findCustomer = _customers.Find(item => item.Id == updatedCustomer.Id);
+        if (findCustomer != null)
         {
             _customers[updatedCustomer.Id] = updatedCustomer;
             Console.WriteLine("User Succesfully Updated.");
@@ -62,9 +64,10 @@ public class CustomerDatabase
     public void DeleteCustomer(int id)
     {
         ArgumentNullException.ThrowIfNull(id);
-        if (_customers.ContainsKey(id))
+        Customer? findCustomer = _customers.Find(item => item.Id == id);
+        if (findCustomer != null)
         {
-            _customers.Remove(id);
+            _customers.Remove(findCustomer);
             Console.WriteLine("Customer Successfully Deleted.");
         }
         else
@@ -76,7 +79,7 @@ public class CustomerDatabase
     public override string ToString()
     {
         StringBuilder databaseState = new StringBuilder("Customer Database: \n");
-        foreach (Customer customer in _customers.Values)
+        foreach (Customer customer in _customers)
         {
             databaseState.Append($"Id : {customer.Id}\n First Name: {customer.FirstName}\n Last Name: {customer.Lastname}\n Email: {customer.Email}\n Address: {customer.Address}");
         }
