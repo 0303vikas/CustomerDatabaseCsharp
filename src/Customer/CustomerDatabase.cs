@@ -7,10 +7,14 @@ public class CustomerDatabase
     private List<Customer> _customers;
     private static CustomerDatabase _instance;
     private static readonly object _lockObject = new Object();
+    private Stack<Customer> _undoStack;
+    private Stack<Customer> _redoStack;
 
     private CustomerDatabase()
     {
         _customers = new List<Customer>();
+        _undoStack = new Stack<Customer>();
+        _redoStack = new Stack<Customer>();
     }
 
     public static CustomerDatabase Instance()
@@ -35,6 +39,8 @@ public class CustomerDatabase
             }
         }
         _customers.Add(newCustomer);
+        _undoStack.Push(newCustomer);
+        _redoStack.Clear();
         Console.WriteLine("Customer Successfully Added.");
     }
     // Reading
@@ -52,7 +58,10 @@ public class CustomerDatabase
         Customer? findCustomer = _customers.Find(item => item.Id == updatedCustomer.Id);
         if (findCustomer != null)
         {
+            Customer oldCustomer = _customers[updatedCustomer.Id];
             _customers[updatedCustomer.Id] = updatedCustomer;
+            _undoStack.Push(oldCustomer);
+            _redoStack.Clear();
             Console.WriteLine("User Succesfully Updated.");
         }
         else
@@ -68,12 +77,51 @@ public class CustomerDatabase
         if (findCustomer != null)
         {
             _customers.Remove(findCustomer);
+            _undoStack.Push(findCustomer);
+            _redoStack.Clear();
             Console.WriteLine("Customer Successfully Deleted.");
         }
         else
         {
             throw new Exception("Deletion Exception: No user with this id found in the Database.");
         }
+    }
+
+    public void UndoAction(Customer customer)
+    {
+        if (_undoStack.Count > 0)
+        {
+            Customer oldCustomer = _undoStack.Pop();
+            _redoStack.Push(oldCustomer);
+            Customer? findCustomer = _customers.Find(customer => customer.Id == oldCustomer.Id);
+            if (findCustomer != null)
+            {
+                _customers.Remove(findCustomer);
+            }
+            else
+            {
+                _customers.Add(oldCustomer);
+            }
+        }
+    }
+
+    public void RedoAction()
+    {
+        if (_redoStack.Count > 0)
+        {
+            Customer oldCustomer = _redoStack.Pop();
+            _undoStack.Push(oldCustomer);
+            Customer? findCustomer = _customers.Find(customer => customer.Id == oldCustomer.Id);
+            if (findCustomer != null)
+            {
+                _customers.Remove(findCustomer);
+            }
+            else
+            {
+                _customers.Add(oldCustomer);
+            }
+        }
+
     }
 
     public override string ToString()
