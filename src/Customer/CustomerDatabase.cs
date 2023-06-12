@@ -34,8 +34,10 @@ public class CustomerDatabase
 
     public void AddCustomer(Customer newCustomer)
     {
+
         foreach (Customer customer in _customers)
         {
+            Console.WriteLine(customer);
             if (customer.Equals(newCustomer))
             {
                 throw new InvalidOperationException("Email and Id should be unique.");
@@ -58,12 +60,13 @@ public class CustomerDatabase
     // Updating
     public void UpdateCustomer(Customer updatedCustomer)
     {
-        ArgumentNullException.ThrowIfNull(updatedCustomer);
-        Customer? findCustomer = _customers.Find(item => item.Id == updatedCustomer.Id);
-        if (findCustomer != null)
+        // ArgumentNullException.ThrowIfNull(updatedCustomer);
+        int customerIndex = _customers.FindIndex(customer => customer.Id == updatedCustomer.Id);
+        if (customerIndex != -1)
         {
-            Customer oldCustomer = _customers[updatedCustomer.Id];
-            _customers[updatedCustomer.Id] = updatedCustomer;
+            Customer oldCustomer = _customers[customerIndex];
+            _customers.RemoveAt(customerIndex);
+            _customers.Insert(customerIndex, updatedCustomer);
             FileHelper.UpdateCustomerData(filePath, "Update", _customers);
             _undoStack.Push(oldCustomer);
             _redoStack.Clear();
@@ -93,7 +96,7 @@ public class CustomerDatabase
         }
     }
 
-    public void UndoAction(Customer customer)
+    public void UndoAction()
     {
         if (_undoStack.Count > 0)
         {
@@ -108,6 +111,7 @@ public class CustomerDatabase
             {
                 _customers.Add(oldCustomer);
             }
+            Console.Write("Undo action completed.");
             FileHelper.UpdateCustomerData(filePath, "Update", _customers);
         }
     }
@@ -127,6 +131,7 @@ public class CustomerDatabase
             {
                 _customers.Add(oldCustomer);
             }
+            Console.Write("ReDo action completed.");
             FileHelper.UpdateCustomerData(filePath, "Update", _customers);
         }
     }
@@ -136,7 +141,7 @@ public class CustomerDatabase
         StringBuilder databaseState = new StringBuilder("Customer Database: \n");
         foreach (Customer customer in _customers)
         {
-            databaseState.Append($"Id : {customer.Id}\n First Name: {customer.FirstName}\n Last Name: {customer.Lastname}\n Email: {customer.Email}\n Address: {customer.Address}");
+            databaseState.Append($"\n\nId : {customer.Id}\n First Name: {customer.FirstName}\n Last Name: {customer.Lastname}\n Email: {customer.Email}\n Address: {customer.Address}");
         }
         return databaseState.ToString();
     }

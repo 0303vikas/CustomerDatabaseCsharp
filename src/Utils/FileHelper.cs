@@ -1,5 +1,4 @@
-using System.IO;
-using System;
+using src.Exceptions;
 namespace src.Utils;
 
 public class FileHelper
@@ -17,7 +16,7 @@ public class FileHelper
                     while ((oneCustomer = databaseReader.ReadLine()) != null)
                     {
                         string[] customerData = oneCustomer.Split(",");
-                        if (customerData.Length > 5)
+                        if (customerData.Length == 5)
                         {
                             Customer.Customer customer = new Customer.Customer(Int32.Parse(customerData[0]), customerData[1], customerData[2], customerData[3], customerData[4]);
                             customerList.Add(customer);
@@ -30,7 +29,7 @@ public class FileHelper
         }
         catch (Exception e)
         {
-            throw new Exception(e.Message);
+            throw FileException.FetchException(e.Message);
         }
     }
 
@@ -46,7 +45,7 @@ public class FileHelper
         }
         catch (Exception e)
         {
-            throw new Exception(e.Message);
+            throw FileException.AddingNewException(e.Message);
         }
     }
 
@@ -65,7 +64,7 @@ public class FileHelper
         }
         catch (Exception e)
         {
-            throw new Exception(e.Message);
+            throw FileException.ModifyDataException(e.Message);
         }
     }
 }
