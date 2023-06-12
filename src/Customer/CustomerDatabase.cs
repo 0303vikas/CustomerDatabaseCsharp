@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using src.Utils;
 namespace src.Customer;
 
 public class CustomerDatabase
@@ -10,9 +11,11 @@ public class CustomerDatabase
     private Stack<Customer> _undoStack;
     private Stack<Customer> _redoStack;
 
+    public string filePath = "src/customers.csv";
+
     private CustomerDatabase()
     {
-        _customers = new List<Customer>();
+        _customers = FileHelper.GetAllCustomers(filePath);
         _undoStack = new Stack<Customer>();
         _redoStack = new Stack<Customer>();
     }
@@ -39,6 +42,7 @@ public class CustomerDatabase
             }
         }
         _customers.Add(newCustomer);
+        FileHelper.AddNewCustomer(filePath, newCustomer);
         _undoStack.Push(newCustomer);
         _redoStack.Clear();
         Console.WriteLine("Customer Successfully Added.");
@@ -60,6 +64,7 @@ public class CustomerDatabase
         {
             Customer oldCustomer = _customers[updatedCustomer.Id];
             _customers[updatedCustomer.Id] = updatedCustomer;
+            FileHelper.UpdateCustomerData(filePath, "Update", _customers);
             _undoStack.Push(oldCustomer);
             _redoStack.Clear();
             Console.WriteLine("User Succesfully Updated.");
@@ -77,6 +82,7 @@ public class CustomerDatabase
         if (findCustomer != null)
         {
             _customers.Remove(findCustomer);
+            FileHelper.UpdateCustomerData(filePath, "Delete", _customers);
             _undoStack.Push(findCustomer);
             _redoStack.Clear();
             Console.WriteLine("Customer Successfully Deleted.");
@@ -102,6 +108,7 @@ public class CustomerDatabase
             {
                 _customers.Add(oldCustomer);
             }
+            FileHelper.UpdateCustomerData(filePath, "Update", _customers);
         }
     }
 
@@ -120,8 +127,8 @@ public class CustomerDatabase
             {
                 _customers.Add(oldCustomer);
             }
+            FileHelper.UpdateCustomerData(filePath, "Update", _customers);
         }
-
     }
 
     public override string ToString()
