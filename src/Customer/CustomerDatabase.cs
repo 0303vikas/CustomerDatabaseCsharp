@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using src.Utils;
+using src.Exceptions;
 namespace src.Customer;
 
 public class CustomerDatabase
@@ -40,7 +41,7 @@ public class CustomerDatabase
             Console.WriteLine(customer);
             if (customer.Equals(newCustomer))
             {
-                throw new InvalidOperationException("Email and Id should be unique.");
+                throw HandlerExceptions.UniqueIdAndEmailException("Email and Id should be unique.");
             }
         }
         _customers.Add(newCustomer);
@@ -53,9 +54,9 @@ public class CustomerDatabase
     public Customer GetCustomerById(int id)
     {
         ArgumentNullException.ThrowIfNull(id);
-        Customer? findCustomer = _customers.Find(item => item.Id == id);
+        Customer? findCustomer = FindCustomer(id);
         if (findCustomer != null) return _customers[id];
-        else throw new Exception($"Customer with id: {id} doesn't exist in database");
+        else throw HandlerExceptions.CustomerExistanceException($"Customer with id: {id} doesn't exist in database");
     }
     // Updating
     public void UpdateCustomer(Customer updatedCustomer)
@@ -74,14 +75,14 @@ public class CustomerDatabase
         }
         else
         {
-            throw new Exception("Update Exception: No user with this id found in the Database.");
+            throw HandlerExceptions.CustomerExistanceException("Update Exception: No user with this id found in the Database.");
         }
     }
     // Deleting
     public void DeleteCustomer(int id)
     {
         ArgumentNullException.ThrowIfNull(id);
-        Customer? findCustomer = _customers.Find(item => item.Id == id);
+        Customer? findCustomer = FindCustomer(id);
         if (findCustomer != null)
         {
             _customers.Remove(findCustomer);
@@ -92,7 +93,7 @@ public class CustomerDatabase
         }
         else
         {
-            throw new Exception("Deletion Exception: No user with this id found in the Database.");
+            throw HandlerExceptions.CustomerExistanceException("Deletion Exception: No user with this id found in the Database.");
         }
     }
 
@@ -102,7 +103,7 @@ public class CustomerDatabase
         {
             Customer oldCustomer = _undoStack.Pop();
             _redoStack.Push(oldCustomer);
-            Customer? findCustomer = _customers.Find(customer => customer.Id == oldCustomer.Id);
+            Customer? findCustomer = FindCustomer(oldCustomer.Id);
             if (findCustomer != null)
             {
                 _customers.Remove(findCustomer);
@@ -122,7 +123,7 @@ public class CustomerDatabase
         {
             Customer oldCustomer = _redoStack.Pop();
             _undoStack.Push(oldCustomer);
-            Customer? findCustomer = _customers.Find(customer => customer.Id == oldCustomer.Id);
+            Customer? findCustomer = FindCustomer(oldCustomer.Id);
             if (findCustomer != null)
             {
                 _customers.Remove(findCustomer);
@@ -134,6 +135,11 @@ public class CustomerDatabase
             Console.Write("ReDo action completed.");
             FileHelper.UpdateCustomerData(filePath, "Update", _customers);
         }
+    }
+
+    public Customer? FindCustomer(int id)
+    {
+        return _customers.Find(customer => customer.Id == id);
     }
 
     public override string ToString()

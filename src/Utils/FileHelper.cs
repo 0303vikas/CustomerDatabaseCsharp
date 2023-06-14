@@ -1,4 +1,5 @@
 using src.Exceptions;
+
 namespace src.Utils;
 
 public class FileHelper
@@ -29,7 +30,7 @@ public class FileHelper
         }
         catch (Exception e)
         {
-            throw FileException.FetchException(e.Message);
+            throw HandlerExceptions.FetchException(e.Message);
         }
     }
 
@@ -45,7 +46,7 @@ public class FileHelper
         }
         catch (Exception e)
         {
-            throw FileException.AddingNewException(e.Message);
+            throw HandlerExceptions.AddingNewException(e.Message);
         }
     }
 
@@ -64,7 +65,7 @@ public class FileHelper
         }
         catch (Exception e)
         {
-            throw FileException.ModifyDataException(e.Message);
+            throw HandlerExceptions.ModifyDataException(e.Message);
         }
     }
 }

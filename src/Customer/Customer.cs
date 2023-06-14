@@ -1,9 +1,10 @@
 using System;
+using src.Exceptions;
 namespace src.Customer;
 
 public class Customer
 {
-    private int _id;
+    private readonly int _id;
     private string _firstName;
     private string _lastName;
     private string _email;
@@ -12,7 +13,6 @@ public class Customer
     public int Id
     {
         get { return _id; }
-        set { _id = value; }
     }
     public string Email
     {
@@ -52,7 +52,7 @@ public class Customer
         }
         else
         {
-            throw new Exception("User FirstName Cann't be empty");
+            throw HandlerExceptions.MissingParameterException("User FirstName Cann't be empty");
         }
     }
 
@@ -64,7 +64,7 @@ public class Customer
         }
         else
         {
-            throw new Exception("User LastName Cann't be empty");
+            throw HandlerExceptions.MissingParameterException("User LastName Cann't be empty");
         }
     }
 
@@ -76,7 +76,7 @@ public class Customer
         }
         else
         {
-            throw new Exception("User Email Cann't be empty");
+            throw HandlerExceptions.MissingParameterException("User Email Cann't be empty");
         }
     }
 
@@ -88,7 +88,7 @@ public class Customer
         }
         else
         {
-            throw new Exception("User Address Cann't be empty");
+            throw HandlerExceptions.MissingParameterException("User Address Cann't be empty");
         }
     }
 
